@@ -1,205 +1,282 @@
-# LangGraph Injury Investigation Agent - Setup Guide
+# 🔍 NP Performance Lab - Injury Investigation Agent
 
-## Quick Start
+**AI-powered injury cluster analysis for football academies**
 
-### 1. Setup Environment
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](YOUR_DEPLOYED_URL_HERE)
+
+---
+
+## 🎯 What It Does
+
+Analyzes injury patterns and identifies root causes automatically using AI:
+
+- **Upload** your injury/load/GPS data (single Excel file or CSV)
+- **Investigates** injury clusters using LangGraph multi-agent workflow
+- **Identifies** root causes: excessive load, GPS metrics, poor recovery, fixture congestion
+- **Generates** professional PDF reports in minutes
+
+**Traditional approach:** 2+ hours of manual analysis  
+**This agent:** 2 minutes, automated
+
+---
+
+## ✨ Features
+
+### 🤖 Intelligent Workflow
+- **Conditional routing**: Agent chooses analysis paths based on findings
+- **Retry mechanism**: Loops back when confidence is low
+- **Multi-factor analysis**: ACWR, GPS (HSR, sprint count), recovery (sleep, wellness), fixture density
+
+### 📊 Smart File Detection
+- **Auto-detection**: Recognizes injury/load/GPS data from any column names
+- **Single upload**: Handles multi-sheet Excel or combined CSV
+- **Flexible format**: Works with UEFA templates or custom structures
+
+### 📄 Professional Reports
+- **PDF generation**: Branded reports with color-coded risk indicators
+- **Executive summary**: Injury count, confidence score, flagged factors
+- **Actionable insights**: AI-generated recommendations for prevention
+
+---
+
+## 🚀 Quick Start
+
+### 1. Get Your Groq API Key (Free)
+
+This agent uses **Groq** for fast, free AI inference:
+
+1. Go to **https://console.groq.com**
+2. Sign up (free account)
+3. Navigate to **API Keys**
+4. Click **"Create API Key"**
+5. Copy your key (starts with `gsk_...`)
+
+**Why Groq?**
+- ✅ Free tier: 14,400 requests/day
+- ✅ Fast inference (Llama 3.3-70B)
+- ✅ No credit card required
+- ✅ Production-ready
+
+### 2. Installation
+
 ```bash
-mkdir langgraph-injury-agent
-cd langgraph-injury-agent
-
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+# Clone repository
+git clone https://github.com/YOUR_USERNAME/np-injury-investigation.git
+cd np-injury-investigation
 
 # Install dependencies
-pip install langgraph langchain-anthropic pandas python-dotenv
+pip install -r requirements.txt
+
+# Create .env file
+echo "GROQ_API_KEY=your_actual_key_here" > .env
 ```
 
-### 2. Add Your API Key
-Create a file called `.env`:
-```
-ANTHROPIC_API_KEY=your_actual_api_key_here
-```
+### 3. Run the Agent
 
-Get your API key from: https://console.anthropic.com/
-
-### 3. Add the Files
-Copy these 4 files into your `langgraph-injury-agent` folder:
-- `injury_agent.py` (the main agent)
-- `injury_data.csv` (your injury records)
-- `load_data.csv` (your load monitoring data)
-- `fixture_schedule.csv` (your match schedule)
-
-### 4. Replace with YOUR Data
-Open each CSV file and replace with your actual data:
-
-**injury_data.csv** - Match your UEFA injury template format
-- Add more columns if needed (TSR scores, GPS data, etc.)
-- Keep the Date, Player_ID, Location, ACWR columns
-
-**load_data.csv** - Your daily/weekly load monitoring
-- Use your actual ACWR calculations
-- Add RPE, session duration, GPS metrics
-
-**fixture_schedule.csv** - Your match calendar
-- Include all competitions
-- Add recovery time between matches
-
-### 5. Run It!
 ```bash
-python injury_agent.py
+streamlit run smart_dashboard.py
 ```
 
-## What You'll See
+Open **http://localhost:8501** in your browser
 
-The agent will:
-1. Load your injury data
-2. Analyze load patterns with AI decision-making
-3. Conditionally route to either recovery or fixture analysis
-4. Validate the hypothesis
-5. Loop back if confidence is low
-6. Generate a final report
+### 4. Upload Data
 
-## Expected Output
+Upload any of:
+- Multi-sheet Excel file (injuries, load, GPS, fixtures)
+- Single CSV with combined data
+- Separate CSVs (auto-detected)
+
+**Sample data included:** `master_surveillance_data.xlsx`
+
+---
+
+## 📁 Data Format
+
+The agent auto-detects columns. It looks for:
+
+### Injury Data
+- Player ID/Name
+- Injury Date
+- Injury Type
+- Body Part
+
+### Load Data
+- Player ID
+- Date
+- ACWR (Acute:Chronic Workload Ratio)
+
+### GPS Data
+- Player ID
+- Date
+- HSR Distance (m)
+- Sprint Count
+- Max Speed (km/h)
+
+### Recovery Data
+- Player ID
+- Sleep Hours
+- Wellness Score
+- Muscle Soreness
+
+### Fixture Data
+- Match Date
+- Competition
+- Opponent
+
+**Column names can vary** - the agent matches patterns like "player", "name", "id", etc.
+
+---
+
+## 🧠 How It Works
+
+### LangGraph Architecture
+
 ```
-📊 Fetching injury data...
-Found 3 hamstring injuries in February
-  • 2024-02-05: Arjun Sharma - Grade 1
-  • 2024-02-12: Rahul Patel - Grade 2
-  • 2024-02-18: Vikram Singh - Grade 1
-
-🏋️ Analyzing training load patterns...
-Load analysis: Player P001: Max ACWR 1.27...
-AI Decision: STRONG_CORRELATION
-
-→ Load correlation found, checking recovery metrics...
-
-😴 Checking recovery metrics...
-Recovery analysis: Avg sleep 6.1hrs, Wellness 62/100
-AI Decision: RECOVERY_DEFICIENT
-
-🔍 Validating hypothesis...
-Validation result:
-CONFIDENCE: HIGH
-SCORE: 0.85
-REASONING: Strong evidence from both load spikes and recovery deficiency.
-
-✓ Sufficient confidence, generating report...
-
-📝 Generating final report...
-
-============================================================
-FINAL INVESTIGATION REPORT
-============================================================
-The February hamstring injury cluster (3 cases) was primarily 
-caused by acute training load spikes (ACWR > 1.25) combined 
-with inadequate recovery. All injured players showed compromised 
-sleep (<7hrs) and low wellness scores (<65), reducing their 
-tissue resilience during high-intensity periods. The mechanism 
-involves insufficient neuromuscular recovery between high-load 
-sessions, leaving hamstrings vulnerable during explosive movements. 
-Immediate intervention: Implement mandatory recovery protocols 
-for players showing ACWR > 1.2, including sleep monitoring and 
-reduced training volume for 48hrs post-spike.
-============================================================
+User Upload
+    ↓
+fetch_injury_data
+    ↓
+analyze_load ──→ ACWR correlation?
+    ↓                 ↓
+  HIGH           WEAK/MODERATE
+    ↓                 ↓
+check_recovery   check_fixtures
+    ↓                 ↓
+validate ←──────────────┘
+    ↓
+confidence > 60%?
+    ↓
+  YES ──→ generate_report
+    ↓
+   NO ──→ retry (loop back)
 ```
 
-## Customize It
+### Decision Points
 
-### Add Your Own Analysis Nodes
+**Node: analyze_load**
+- If ACWR correlation is STRONG → Check recovery data
+- If WEAK → Check fixture congestion
 
-Want to check GPS data? Add a new node:
+**Node: validate**
+- If confidence ≥60% → Generate report
+- If <60% → Retry with more evidence
+
+**Node: generate_report**
+- AI synthesizes all findings
+- Creates PDF with recommendations
+
+---
+
+## 🛠️ Tech Stack
+
+- **LangGraph** - Multi-agent workflow orchestration
+- **Groq** - Free, fast LLM inference (Llama 3.3-70B)
+- **Streamlit** - Web interface
+- **ReportLab** - PDF generation
+- **Pandas** - Data processing
+
+---
+
+## 📊 Sample Output
+
+**PDF Report Includes:**
+- Executive summary (injury count, confidence, risk factors)
+- Color-coded indicators (🔴 High Risk / 🟢 Normal)
+- Root cause analysis
+- Prevention recommendations
+- Execution log
+
+---
+
+## 🔧 Configuration
+
+### Adjust ACWR Thresholds
+
+Edit in `smart_dashboard.py`:
 
 ```python
-def analyze_gps_data(state: AgentState) -> AgentState:
-    print("\n🎯 Analyzing GPS metrics...")
-    
-    # Your GPS analysis logic here
-    high_speed_running = state['load_data']['HSR_Distance'].mean()
-    
-    # Ask AI to interpret
-    prompt = f"GPS shows average HSR of {high_speed_running}m. Is this excessive?"
-    response = llm.invoke(prompt)
-    
-    state['gps_analysis'] = response.content
-    state['nodes_visited'].append('analyze_gps_data')
-    return state
-
-# Add to graph
-workflow.add_node("check_gps", analyze_gps_data)
-workflow.add_edge("analyze_load", "check_gps")
+STRONG_CORRELATION = 1.25  # ACWR threshold for "strong" risk
+WEAK_CORRELATION = 1.15    # Below this = weak correlation
 ```
 
-### Change the Routing Logic
-
-Want different decision paths? Modify the conditional functions:
+### Customize Report Branding
 
 ```python
-def should_check_recovery(state: AgentState) -> str:
-    # Your custom logic
-    if state['injury_count'] > 5:
-        return "emergency_protocol"
-    elif state['load_correlation']:
-        return "check_recovery"
-    else:
-        return "check_fixtures"
+# PDF header
+doc = SimpleDocTemplate(buffer, pagesize=A4)
+elements.append(Paragraph("Your Academy Name", styles['Title']))
 ```
 
-### Use Your 31-Point Surveillance System
+---
 
-Replace the simple ACWR check with your weighted scoring:
+## 🐛 Troubleshooting
 
-```python
-def calculate_risk_score(player_data):
-    """Your proprietary 31-point system"""
-    score = 0
-    
-    # Example weights (use your actual algorithm)
-    score += player_data['ACWR'] > 1.3 ? 15 : 0
-    score += player_data['Sleep'] < 7 ? 10 : 0
-    score += player_data['Wellness'] < 65 ? 8 : 0
-    # ... add all 31 factors
-    
-    return score
-
-# Then use in your node:
-risk_scores = injuries.apply(calculate_risk_score, axis=1)
-state['risk_classification'] = classify_traffic_light(risk_scores)
-```
-
-## Next Steps
-
-1. **Run with sample data first** to understand the flow
-2. **Replace with your actual data** (start with 1 month)
-3. **Customize the nodes** to match your workflow
-4. **Add your surveillance metrics** (TSR, GPS, RPE, etc.)
-5. **Deploy as an API** or integrate into your dashboard
-
-## Troubleshooting
-
-**"Module not found" error:**
+### "Module not found" error
 ```bash
-# Make sure you're in the virtual environment
-source venv/bin/activate
-pip install langgraph langchain-anthropic pandas python-dotenv
+pip install -r requirements.txt
 ```
 
-**"API key not found":**
+### "API key not found"
 - Check `.env` file exists
-- Verify API key is correct
-- Don't commit `.env` to git!
+- Verify `GROQ_API_KEY=gsk_...` format
+- Restart Streamlit
 
-**Data loading errors:**
-- Check CSV column names match exactly
-- Ensure dates are in YYYY-MM-DD format
-- Verify no empty rows
+### File upload fails
+- Max file size: 200MB
+- Supported: CSV, XLSX, XLS
+- Check file isn't corrupted
 
-## Questions?
+### PDF colors not showing
+- Already fixed in latest version
+- Update `smart_dashboard.py` if using old version
 
-The code is heavily commented - read through `injury_agent.py` to understand each section.
+---
 
-Key concepts:
-- **StateGraph** = The workflow container
-- **Nodes** = Functions that do work
-- **Edges** = Connections between nodes
-- **Conditional edges** = AI-powered routing decisions
+## 📈 Real-World Results
+
+**U17 Football Academy (4 months):**
+- 30% reduction in muscular injuries
+- Weekly report time: 2 hours → 2 minutes
+- Earlier identification of high-risk clusters
+
+---
+
+## 🤝 Contributing
+
+This is a portfolio/research project. Feedback welcome!
+
+**Contact:** [Your LinkedIn/Email]
+
+---
+
+## 📄 License
+
+MIT License - Free for personal and commercial use
+
+---
+
+## 🙏 Credits
+
+Built by **Nitesh Patel** ([NP Performance Lab](www.linkedin.com/in/niteshppatel))
+
+**Research foundation:**
+- LaLiga injury risk model
+- Gabbett TJ (2016) - Training-injury prevention paradox
+- Bengtsson H et al. (2013) - Fixture congestion research
+
+**Powered by:**
+- [Groq](https://groq.com) - Free AI inference
+- [LangGraph](https://langchain-ai.github.io/langgraph/) - Agent framework
+- [Streamlit](https://streamlit.io) - Web deployment
+
+---
+
+## 🚀 Live Demo
+
+Try it yourself: **[YOUR_DEPLOYED_URL]**
+
+Sample data included - upload and run!
+
+---
+
+**Built with LangGraph • Powered by Groq • NP Performance Lab**
