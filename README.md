@@ -273,7 +273,7 @@ Built by **Nitesh Patel** (www.linkedin.com/in/niteshppatel)
 
 ## 🚀 Live Demo
 
-Try it yourself: **[YOUR_DEPLOYED_URL]**
+Try it yourself: **[[YOUR_DEPLOYED_URL](https://np-injury-investigation.streamlit.app/)]**
 
 Sample data included - upload and run!
 
