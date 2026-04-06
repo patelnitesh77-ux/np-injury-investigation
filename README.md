@@ -257,7 +257,7 @@ MIT License - Free for personal and commercial use
 
 ## 🙏 Credits
 
-Built by **Nitesh Patel** ([NP Performance Lab](www.linkedin.com/in/niteshppatel))
+Built by **Nitesh Patel** (www.linkedin.com/in/niteshppatel)
 
 **Research foundation:**
 - LaLiga injury risk model
